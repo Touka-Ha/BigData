@@ -1,4 +1,5 @@
-# file: worldometers_population_all_countries_robust.py
+# The idea: to bring a list of all countries and their links (233 countries) and then go inside each country, 
+#and extract the population timeline (from one year to another)
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
