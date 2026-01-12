@@ -1,0 +1,69 @@
+.\mongo.exe
+
+use info
+
+db
+
+db.createCollection("produits")
+db.produits.insert({
+  nom: "Macbook Pro",
+  fabriquant: "Apple",
+  prix: 11435.99,
+  options: [
+    "Intel Core i5",
+    "Retina Display",
+    "Long life battery"
+  ]
+})
+
+db.produits.insert({
+  nom: "Macbook Air",
+  fabriquant: "Apple",
+  prix: 125794.73,
+  ultrabook: true,
+  options: [
+    "Intel Core i7",
+    "SSD",
+    "Long life battery"
+  ]
+})
+
+db.produits.insert({
+  nom: "Thinkpad X230",
+  fabriquant: "Lenovo",
+  prix: 114358.74,
+  ultrabook: true,
+  options: [
+    "Intel Core i5",
+    "SSD",
+    "Long life battery"
+  ]
+})
+
+
+db.produits.find().pretty()
+
+db.produits.findOne()
+
+var think = db.produits.findOne({ nom: "Thinkpad X230" })
+
+db.produits.findOne({ _id: think._id })
+
+db.produits.find({ prix: { $gt: 13723 } }).pretty()
+
+db.produits.findOne({ ultrabook: true })
+
+db.produits.findOne({ nom: /Macbook/ })
+
+db.produits.find({ nom: /^Macbook/ }).pretty()
+
+db.produits.remove({ fabriquant: "Apple" })
+
+var idThink = db.produits.findOne({ nom: "Thinkpad X230" })._id
+
+db.produits.remove({ _id: idThink })
+
+للتأكد : 
+db.produits.find().pretty()
+db.produits.count()
+

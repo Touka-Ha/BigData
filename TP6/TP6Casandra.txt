@@ -1,0 +1,75 @@
+docker exec -it mon-cassandra cqlsh
+
+CREATE KEYSPACE IF NOT EXISTS resto_NY
+WITH REPLICATION = {
+  'class' : 'SimpleStrategy',
+  'replication_factor' : 1
+};
+
+USE resto_NY;
+
+CREATE TABLE Restaurant (
+    id INT,
+    Name VARCHAR,
+    borough VARCHAR,
+    BuildingNum VARCHAR,
+    Street VARCHAR,
+    ZipCode INT,
+    Phone TEXT,
+    CuisineType VARCHAR,
+    PRIMARY KEY (id)
+);
+CREATE INDEX fk_Restaurant_cuisine ON Restaurant (CuisineType);
+
+CREATE TABLE Inspection (
+    idRestaurant INT,
+    InspectionDate DATE,
+    ViolationCode VARCHAR,
+    ViolationDescription VARCHAR,
+    CriticalFlag VARCHAR,
+    Score INT,
+    Grade VARCHAR,
+    PRIMARY KEY (idRestaurant, InspectionDate)
+);
+CREATE INDEX fk_Inspection_Restaurant ON Inspection (Grade);
+
+docker cp "C:\Users\restaurants\restaurants.csv" mon-cassandra:/restaurants.csv
+docker cp "C:\Users\restaurants\restaurants_inspections.csv" mon-cassandra:/restaurants_inspections.csv
+
+COPY Restaurant (id, name, borough, buildingnum, street, zipcode, phone, cuisinetype)
+FROM '/restaurants.csv'
+WITH DELIMITER=',';
+COPY Inspection (idrestaurant, inspectiondate, violationcode, violationdescription, criticalflag, score, grade)
+FROM '/restaurants_inspections.csv'
+WITH DELIMITER=',';
+USE resto_NY;
+
+SELECT * FROM Restaurant;
+
+SELECT name FROM Restaurant;
+
+SELECT name, borough
+FROM Restaurant
+WHERE id = 41569764;
+
+SELECT inspectiondate, grade
+FROM Inspection
+WHERE idrestaurant = 41569764;
+
+SELECT name
+FROM Restaurant
+WHERE cuisinetype = 'French';
+
+CREATE INDEX IF NOT EXISTS idx_restaurant_borough
+ON Restaurant (borough);
+SELECT name
+FROM Restaurant
+WHERE borough = 'BROOKLYN';
+
+SELECT grade, score
+FROM Inspection
+WHERE idrestaurant = 41569764
+  AND score >= 10
+ALLOW FILTERING;
+
+
